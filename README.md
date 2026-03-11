@@ -1,265 +1,129 @@
-# BetManager Pro - Professional Betting Management System
+<div align="center">
 
-A high-tech, professional betting management system with a Go backend and Next.js frontend featuring an iOS-inspired UI with glassmorphism effects and smooth animations.
+# 🎯 Stakefolio (BetManager Pro)
 
-![BetManager Pro](https://img.shields.io/badge/Status-Ready-success)
-![Go](https://img.shields.io/badge/Go-1.21-00ADD8?logo=go)
-![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
+### _High-Performance Betting Intelligence & Bankroll Management_
 
-## ✨ Features
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Powered-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Framer Motion](https://img.shields.io/badge/Framer--Motion-Animated-purple?style=for-the-badge&logo=framer)](https://www.framer.com/motion/)
 
-### 🎯 Core Functionality
-- **Bookie Management** - Add, edit, and track multiple betting platforms
-- **Bet Tracking** - Record bets with automatic P&L calculation
-- **Bankroll Management** - Comprehensive deposit/withdrawal tracking
-- **Real-time Analytics** - ROI, win rate, and profit/loss statistics
-- **Transaction History** - Complete audit trail of all financial activities
+**Stakefolio** is a premium, iOS-inspired betting management system. Designed with glassmorphism aesthetics and smooth micro-interactions, it provides professional-grade analytics, atomic bankroll tracking, and AI-powered insights.
 
-### 🎨 Premium UI/UX
-- **iOS-Inspired Design** - Modern, sleek interface with glassmorphism
-- **Smooth Animations** - Framer Motion powered micro-interactions
-- **Responsive Layout** - Perfect on desktop, tablet, and mobile
-- **Dark Mode Support** - Automatic theme detection
-- **Color-Coded Indicators** - Visual profit/loss tracking
+</div>
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Go 1.21 or higher
-- Node.js 18 or higher
-- PostgreSQL 14 or higher
-
-### Backend Setup
-
-1. **Navigate to backend directory:**
-```bash
-cd betting-management/backend
-```
-
-2. **Create PostgreSQL database:**
-```bash
-createdb betting_management
-```
-
-3. **Configure environment:**
-```bash
-cp .env.example .env
-# Edit .env with your database credentials
-```
-
-4. **Install dependencies:**
-```bash
-go mod download
-```
-
-5. **Run the server:**
-```bash
-go run main.go
-```
-
-The API will be available at `http://localhost:8080`
-
-### Frontend Setup
-
-1. **Navigate to frontend directory:**
-```bash
-cd betting-management/frontend
-```
-
-2. **Install dependencies:**
-```bash
-npm install
-```
-
-3. **Configure environment:**
-```bash
-cp .env.local.example .env.local
-```
-
-4. **Run the development server:**
-```bash
-npm run dev
-```
-
-The app will be available at `http://localhost:3000`
-
-## 📁 Project Structure
-
-```
-betting-management/
-├── backend/
-│   ├── config/          # Configuration management
-│   ├── controllers/     # API controllers
-│   ├── database/        # Database connection
-│   ├── middleware/      # JWT authentication
-│   ├── models/          # Data models
-│   ├── routes/          # API routes
-│   └── main.go          # Entry point
-│
-└── frontend/
-    ├── app/             # Next.js pages
-    │   ├── dashboard/   # Main dashboard
-    │   ├── bookies/     # Bookie management
-    │   ├── bets/        # Bet tracking
-    │   ├── bankroll/    # Bankroll management
-    │   └── login/       # Authentication
-    ├── components/      # React components
-    │   ├── ui/          # Base UI components
-    │   ├── bookies/     # Bookie components
-    │   ├── bets/        # Bet components
-    │   ├── bankroll/    # Bankroll components
-    │   └── layout/      # Layout components
-    ├── lib/             # Utilities & API client
-    └── types/           # TypeScript definitions
-```
-
-## 🎨 Design System
-
-### Colors
-- **Primary**: Blue gradient (#3B82F6 → #2563EB)
-- **Success**: Green (#22C55E)
-- **Danger**: Red (#EF4444)
-- **Warning**: Orange (#F59E0B)
-
-### Effects
-- **Glassmorphism**: Frosted glass effect with backdrop blur
-- **iOS Shadows**: Soft, layered shadows
-- **Smooth Transitions**: 200ms cubic-bezier animations
-- **Micro-interactions**: Haptic-style button presses
-
-## 🔐 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/me` - Get current user
-
-### Bookies
-- `GET /api/bookies` - List all bookies
-- `POST /api/bookies` - Create bookie
-- `GET /api/bookies/:id` - Get bookie details
-- `PUT /api/bookies/:id` - Update bookie
-- `DELETE /api/bookies/:id` - Delete bookie
-
-### Bets
-- `GET /api/bets` - List bets (with filters)
-- `POST /api/bets` - Create bet
-- `GET /api/bets/stats` - Get betting statistics
-- `GET /api/bets/:id` - Get bet details
-- `PATCH /api/bets/:id/status` - Update bet status
-
-### Bankroll
-- `POST /api/bankroll/deposit` - Deposit funds
-- `POST /api/bankroll/withdraw` - Withdraw funds
-- `GET /api/bankroll/transactions` - Get transaction history
-- `GET /api/bankroll/summary` - Get bankroll summary
-
-## 🛠️ Tech Stack
-
-### Backend
-- **Go** - High-performance backend
-- **Gin** - Web framework
-- **GORM** - ORM for PostgreSQL
-- **JWT** - Authentication
-- **PostgreSQL** - Database
-
-### Frontend
-- **Next.js 14** - React framework
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **Framer Motion** - Animations
-- **React Query** - Data fetching
-- **Axios** - HTTP client
-- **Zustand** - State management
-- **React Hot Toast** - Notifications
-
-## 📊 Database Schema
-
-### Users
-- Authentication and profile information
-
-### Bookies
-- Betting platform details and balances
-
-### Bets
-- Individual bet records with P&L tracking
-
-### Bankroll Transactions
-- Complete financial transaction history
-
-## 🎯 Key Features Explained
-
-### Automatic P&L Calculation
-When you mark a bet as won or lost, the system automatically:
-- Calculates profit/loss
-- Updates bookie balance
-- Creates transaction records
-- Updates statistics
-
-### Bankroll Management
-- Track deposits and withdrawals per bookie
-- View complete transaction history
-- Monitor ROI across all platforms
-- See total balance at a glance
-
-### Real-time Statistics
-- Win rate percentage
-- Total profit/loss
-- ROI calculation
-- Active bets tracking
-
-## 🔒 Security
-
-- JWT-based authentication
-- Password hashing with bcrypt
-- Protected API routes
-- CORS configuration
-- SQL injection prevention (GORM)
-
-## 📱 Responsive Design
-
-The app is fully responsive and optimized for:
-- Desktop (1920px+)
-- Laptop (1024px - 1919px)
-- Tablet (768px - 1023px)
-- Mobile (320px - 767px)
-
-## 🎨 Customization
-
-### Adding Custom Colors
-Edit `tailwind.config.ts` to add your own color schemes.
-
-### Modifying Animations
-Adjust animation timings in `globals.css` and Framer Motion configs.
-
-### Changing Currency
-Update the `formatCurrency` function in `lib/utils.ts`.
-
-## 🐛 Troubleshooting
-
-### Backend won't start
-- Check PostgreSQL is running
-- Verify database credentials in `.env`
-- Ensure port 8080 is available
-
-### Frontend won't start
-- Run `npm install` to ensure all dependencies are installed
-- Check `.env.local` has correct API URL
-- Ensure port 3000 is available
-
-### CORS errors
-- Verify backend CORS configuration includes frontend URL
-- Check API URL in frontend `.env.local`
-
-## 📝 License
-
-This project is private and proprietary.
-
-## 🤝 Support
-
-For issues or questions, please contact the development team.
+<br />
 
 ---
 
-**Built with ❤️ using Go and Next.js**
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| 📊 **Real-time Analytics** | Track ROI, Win Rate, and P&L with live updates. |
+| 🛡️ **Atomic Bankroll** | Secure, trigger-based deposit/withdrawal system ensuring data integrity. |
+| 🎨 **iOS Glassmorphism** | A stunning, premium UI with smooth Framer Motion animations. |
+| 🤖 **Stakey Drake AI** | Groq-powered AI assistant for betting patterns and recommendations. |
+| 🏆 **Global Leaderboard** | Optimized performance ranking top-tier bettors. |
+| 📱 **Mobile Optimized** | Full progressive web experience with sticky touch navigation. |
+
+<br />
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+<table>
+<tr>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" width="48" height="48" alt="Next.js" />
+<br>Next.js 15
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="48" height="48" alt="TypeScript" />
+<br>TypeScript
+</td>
+<td align="center" width="96">
+<img src="https://www.vectorlogo.zone/logos/supabase/supabase-icon.svg" width="48" height="48" alt="Supabase" />
+<br>Supabase
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" width="48" height="48" alt="Tailwind" />
+<br>Tailwind
+</td>
+</tr>
+</table>
+
+**Core Engine:** Powered by **Supabase PostgreSQL** with custom triggers and RPCs.  
+**Intelligence:** Integrated with **Groq AI (Llama 3.3)** for context-aware betting analysis.
+
+</div>
+
+<br />
+
+---
+
+## 🚀 Architecture Update
+
+This project has migrated to a **Supabase-first architecture**. 
+
+- **Legacy Go Backend**: The `backend` directory contains the original Go/Gin server, now deprecated in favor of Supabase Row Level Security (RLS) and PostgreSQL functions.
+- **Frontend Intelligence**: All business logic for bet settlement and bankroll atomicity is handled directly via Supabase RPCs and triggers.
+
+<br />
+
+## 🏁 Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/sxmuel-py/stakefolio.git
+
+# Install all dependencies (from root)
+npm run install:all
+
+# Setup environment
+cp frontend/.env.local.example frontend/.env.local
+
+# Launch the premium experience
+npm run dev
+```
+
+<br />
+
+---
+
+## ☕ Support the Journey
+
+<div align="center">
+  
+### **Buy Me A Coffee (Crypto)**
+
+**BTC:** `16EshJ2J6kzpZafECRBmBUrfwm8D1ZWP6W`  
+**ETH:** `0x5f0a200b60a06f841c2165ffd59ec07ec4ac8fc9`  
+**SOL:** `8iHrRx8pcmXLCFAykm1KS3JTLroxUZ97DStjG3LjUUj8`
+
+<br />
+
+### **Direct Support (USA)**
+
+**Bank:** `Wells Fargo`  
+**Account:** `40630299512258349` | **Routing:** `121000248`
+
+<br />
+
+### **Direct Support (Naira)**
+
+**Bank:** `OPAY`  
+**Account:** `9059785724` | **Name:** `SAMUEL OLATIDOYE`
+
+<br />
+
+---
+
+### **Built with ❤️ and late nights by Samuel**
+
+**Contact:** [ixsamuel19@gmail.com](mailto:ixsamuel19@gmail.com)
+
+</div>
