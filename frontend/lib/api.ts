@@ -56,8 +56,8 @@ export async function getExchangeRate(
   
   // Fallback to database rates
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('exchange_rates')
+  const { data, error } = await (supabase
+    .from('exchange_rates') as any)
     .select('rate')
     .eq('from_currency', from)
     .eq('to_currency', to)
@@ -68,7 +68,7 @@ export async function getExchangeRate(
     return 1;
   }
 
-  return parseFloat(data.rate.toString());
+  return parseFloat((data as any).rate.toString());
 }
 
 // Convert amount from one currency to another
@@ -93,8 +93,8 @@ export async function updateExchangeRates(): Promise<void> {
 
       const rate = await fetchLiveExchangeRate(from, to);
       if (rate) {
-        await supabase
-          .from('exchange_rates')
+        await (supabase
+          .from('exchange_rates') as any)
           .upsert({
             from_currency: from,
             to_currency: to,
@@ -119,8 +119,8 @@ export const bookiesAPI = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { data, error } = await supabase
-      .from('bookies')
+    const { data, error } = await (supabase
+      .from('bookies') as any)
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
@@ -146,8 +146,8 @@ export const bookiesAPI = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { data, error } = await supabase
-      .from('bookies')
+    const { data, error } = await (supabase
+      .from('bookies') as any)
       .insert({ ...bookieData, user_id: user.id })
       .select()
       .single();
@@ -158,8 +158,8 @@ export const bookiesAPI = {
 
   update: async (id: string, bookieData: Database['public']['Tables']['bookies']['Update']) => {
     const supabase = createClient();
-    const { data, error } = await supabase
-      .from('bookies')
+    const { data, error } = await (supabase
+      .from('bookies') as any)
       .update(bookieData)
       .eq('id', id)
       .select()
@@ -188,8 +188,8 @@ export const betsAPI = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    let query = supabase
-      .from('bets')
+    let query = (supabase
+      .from('bets') as any)
       .select('*, bookie:bookies(*)')
       .eq('user_id', user.id)
       .order('placed_at', { ascending: false });
@@ -223,8 +223,8 @@ export const betsAPI = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { data, error } = await supabase
-      .from('bets')
+    const { data, error } = await (supabase
+      .from('bets') as any)
       .insert({ ...betData, user_id: user.id })
       .select('*, bookie:bookies(*)')
       .single();
@@ -235,8 +235,8 @@ export const betsAPI = {
 
   updateStatus: async (id: number, status: string) => {
     const supabase = createClient();
-    const { data, error } = await supabase
-      .from('bets')
+    const { data, error } = await (supabase
+      .from('bets') as any)
       .update({ status })
       .eq('id', id)
       .select('*, bookie:bookies(*)')
@@ -251,12 +251,13 @@ export const betsAPI = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { data: bets, error } = await supabase
-      .from('bets')
+    const { data: betsData, error } = await (supabase
+      .from('bets') as any)
       .select('*')
       .eq('user_id', user.id);
-
+    
     if (error) throw error;
+    const bets = betsData as any[];
 
     const stats = {
       total_bets: bets.length,
@@ -279,7 +280,7 @@ export const bankrollAPI = {
   deposit: async (data: { bookie_id: string; amount: number; description?: string }) => {
     const supabase = createClient();
     
-    const { data: result, error } = await supabase.rpc('handle_bankroll_transaction', {
+    const { data: result, error } = await (supabase as any).rpc('handle_bankroll_transaction', {
       p_bookie_id: data.bookie_id,
       p_amount: data.amount,
       p_type: 'deposit',
@@ -293,7 +294,7 @@ export const bankrollAPI = {
   withdraw: async (data: { bookie_id: string; amount: number; description?: string }) => {
     const supabase = createClient();
     
-    const { data: result, error } = await supabase.rpc('handle_bankroll_transaction', {
+    const { data: result, error } = await (supabase as any).rpc('handle_bankroll_transaction', {
       p_bookie_id: data.bookie_id,
       p_amount: -data.amount,
       p_type: 'withdraw',
@@ -309,8 +310,8 @@ export const bankrollAPI = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    let query = supabase
-      .from('bankroll_transactions')
+    let query = (supabase
+      .from('bankroll_transactions') as any)
       .select('*, bookie:bookies(*)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
@@ -336,13 +337,15 @@ export const bankrollAPI = {
       .eq('id', user.id)
       .single();
 
-    const preferredCurrency = userData?.preferred_currency || 'USD';
+    const preferredCurrency = (userData as any)?.preferred_currency || 'USD';
 
     // Get all bookies with their currencies
-    const { data: bookies } = await supabase
-      .from('bookies')
+    const { data: bookiesData } = await (supabase
+      .from('bookies') as any)
       .select('current_balance, currency')
       .eq('user_id', user.id);
+
+    const bookies = bookiesData as any[];
 
     // Convert all balances to preferred currency
     // Set useLiveRates to true if you want real-time rates
@@ -359,10 +362,12 @@ export const bankrollAPI = {
     }
 
     // Get all transactions
-    const { data: transactions } = await supabase
-      .from('bankroll_transactions')
+    const { data: transactionsData } = await (supabase
+      .from('bankroll_transactions') as any)
       .select('amount, type')
       .eq('user_id', user.id);
+
+    const transactions = transactionsData as any[];
 
     const total_deposited = transactions?.filter(t => t.type === 'deposit').reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
     const total_withdrawn = transactions?.filter(t => t.type === 'withdrawal').reduce((sum, t) => sum + Math.abs(t.amount || 0), 0) || 0;

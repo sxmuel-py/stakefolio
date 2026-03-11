@@ -18,6 +18,7 @@ export default function LoginPage() {
     email: '',
     password: '',
     username: '',
+    fullName: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,7 +30,7 @@ export default function LoginPage() {
         await signIn(formData.email, formData.password);
         toast.success('Welcome back!');
       } else {
-        await signUp(formData.email, formData.password, formData.username);
+        await signUp(formData.email, formData.password, formData.username, formData.fullName);
         toast.success('Account created! Check your email to verify.');
       }
       router.push('/dashboard');
@@ -42,9 +43,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Branding */}
+      {/* ... Left Side content ... */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 relative overflow-hidden">
         {/* Animated Background Elements */}
+        {/* ... (rest of the branding side is unchanged) ... */}
         <div className="absolute inset-0">
           <motion.div
             className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"
@@ -156,7 +158,19 @@ export default function LoginPage() {
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.2 }}
+                    className="space-y-5"
                   >
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                      <Input
+                        label="Full Name"
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        className="pl-10"
+                        placeholder="Johnny Doe"
+                        required={!isLogin}
+                      />
+                    </div>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
                       <Input
@@ -164,6 +178,7 @@ export default function LoginPage() {
                         value={formData.username}
                         onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                         className="pl-10"
+                        placeholder="johnny_bets"
                         required={!isLogin}
                       />
                     </div>
@@ -179,6 +194,7 @@ export default function LoginPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="pl-10"
+                  placeholder="name@example.com"
                   required
                 />
               </div>
@@ -191,6 +207,7 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="pl-10 pr-10"
+                  placeholder="••••••••"
                   required
                 />
                 <button

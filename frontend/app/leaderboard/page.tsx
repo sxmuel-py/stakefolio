@@ -33,14 +33,14 @@ export default function LeaderboardPage() {
       const supabase = createClient();
 
       // Get all users with their pre-calculated bet stats from triggers
-      const { data: users, error: usersError } = await supabase
+      const { data: usersData, error: usersError } = await supabase
         .from('users')
         .select('id, username, display_name, email, total_profit, win_rate, total_bets')
-        .gt('total_bets', 4); // Minimum 5 bets required (gt 4)
+        .gt('total_bets', 4);
 
-      if (usersError || !users) return [];
+      if (usersError || !usersData) return [];
 
-      const leaderboardData: LeaderboardEntry[] = users.map(user => ({
+      const leaderboardData: LeaderboardEntry[] = (usersData as any[]).map(user => ({
         userId: user.id,
         username: user.username || user.display_name || user.email?.split('@')[0] || 'Anonymous',
         totalBets: user.total_bets,

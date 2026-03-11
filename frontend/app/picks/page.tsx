@@ -39,12 +39,14 @@ export default function BestPicksPage() {
     queryFn: async () => {
       const supabase = createClient();
       
-      const { data: topUsers } = await supabase
+      const { data: topUsersData } = await supabase
         .from('users')
         .select('id, username, display_name')
         .limit(10);
 
-      if (!topUsers) return [];
+      if (!topUsersData) return [];
+
+      const topUsers = topUsersData as any[];
 
       const { data: bets } = await supabase
         .from('bets')

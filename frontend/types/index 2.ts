@@ -1,23 +1,20 @@
 export interface User {
-  id: string;
+  id: number;
   email: string;
-  username: string;
-  display_name: string | null;
+  name: string;
   created_at: string;
   updated_at: string;
-  preferred_currency: string;
 }
 
 export interface Bookie {
-  id: string;
-  user_id: string;
+  id: number;
+  user_id: number;
   name: string;
-  website?: string | null;
+  website?: string;
   current_balance: number;
   initial_deposit: number;
-  currency: string;
   color: string;
-  notes?: string | null;
+  notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -26,20 +23,20 @@ export type BetStatus = 'pending' | 'won' | 'lost' | 'void';
 export type BetType = 'single' | 'accumulator' | 'system';
 
 export interface Bet {
-  id: string;
-  user_id: string;
-  bookie_id: string;
+  id: number;
+  user_id: number;
+  bookie_id: number;
   description: string;
-  bet_type: string;
+  bet_type: BetType;
   stake: number;
   odds: number;
-  status: string;
-  potential_win: number | null;
+  status: BetStatus;
+  potential_win: number;
   actual_return: number;
-  profit: number | null;
+  profit: number;
   placed_at: string;
-  settled_at?: string | null;
-  notes?: string | null;
+  settled_at?: string;
+  notes?: string;
   created_at: string;
   updated_at: string;
   bookie?: Bookie;
@@ -80,5 +77,4 @@ export interface BankrollSummary {
   total_profit: number;
   roi: number;
   bookie_count: number;
-  currency: string;
 }

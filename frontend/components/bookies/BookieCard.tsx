@@ -33,12 +33,13 @@ export function BookieCard({ bookie, onEdit }: BookieCardProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return 'USD';
       
-      const { data } = await supabase
+      const { data: userData } = await supabase
         .from('users')
         .select('preferred_currency')
         .eq('id', user.id)
         .single();
       
+      const data = userData as any;
       return data?.preferred_currency || 'USD';
     },
   });

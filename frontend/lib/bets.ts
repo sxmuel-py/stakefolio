@@ -31,7 +31,7 @@ export async function getBets(filters?: {
     query = query.limit(filters.limit);
   }
 
-  const { data, error } = await query;
+  const { data, error } = await (query as any);
   if (error) throw error;
   return data;
 }
@@ -41,8 +41,8 @@ export async function getBets(filters?: {
  */
 export async function getBet(id: string) {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('bets')
+  const { data, error } = await (supabase
+    .from('bets') as any)
     .select('*, bookies(name, color)')
     .eq('id', id)
     .single();
@@ -59,8 +59,8 @@ export async function createBet(bet: BetInsert) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
-  const { data, error } = await supabase
-    .from('bets')
+  const { data, error } = await (supabase
+    .from('bets') as any)
     .insert({
       ...bet,
       user_id: user.id,
@@ -77,8 +77,8 @@ export async function createBet(bet: BetInsert) {
  */
 export async function updateBet(id: string, updates: BetUpdate) {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('bets')
+  const { data, error } = await (supabase
+    .from('bets') as any)
     .update(updates)
     .eq('id', id)
     .select()
@@ -93,8 +93,8 @@ export async function updateBet(id: string, updates: BetUpdate) {
  */
 export async function updateBetStatus(id: string, status: 'won' | 'lost' | 'void') {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('bets')
+  const { data, error } = await (supabase
+    .from('bets') as any)
     .update({ 
       status,
       settled_at: new Date().toISOString(),
@@ -112,8 +112,8 @@ export async function updateBetStatus(id: string, status: 'won' | 'lost' | 'void
  */
 export async function deleteBet(id: string) {
   const supabase = createClient();
-  const { error } = await supabase
-    .from('bets')
+  const { error } = await (supabase
+    .from('bets') as any)
     .delete()
     .eq('id', id);
 
@@ -125,18 +125,19 @@ export async function deleteBet(id: string) {
  */
 export async function getBetStats() {
   const supabase = createClient();
-  const { data: bets, error } = await supabase
-    .from('bets')
+  const { data: betsData, error } = await (supabase
+    .from('bets') as any)
     .select('*');
 
   if (error) throw error;
+  const bets = betsData as any[];
 
   const totalBets = bets.length;
   const pendingBets = bets.filter(b => b.status === 'pending').length;
   const settledBets = bets.filter(b => b.status !== 'pending');
   const wonBets = bets.filter(b => b.status === 'won').length;
   const lostBets = bets.filter(b => b.status === 'lost').length;
-  const totalStaked = bets.reduce((sum, bet) => sum + bet.stake, 0);
+  const totalStaked = bets.reduce((sum, bet) => sum + (bet.stake || 0), 0);
   const totalProfit = bets.reduce((sum, bet) => sum + (bet.profit || 0), 0);
 
   return {
@@ -156,8 +157,8 @@ export async function getBetStats() {
  */
 export async function getSharedBets(limit = 20) {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('bets')
+  const { data, error } = await (supabase
+    .from('bets') as any)
     .select('*, users(username, display_name, avatar_url)')
     .eq('is_shared', true)
     .order('created_at', { ascending: false })
@@ -172,8 +173,8 @@ export async function getSharedBets(limit = 20) {
  */
 export async function toggleBetSharing(id: string, isShared: boolean) {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('bets')
+  const { data, error } = await (supabase
+    .from('bets') as any)
     .update({ is_shared: isShared })
     .eq('id', id)
     .select()

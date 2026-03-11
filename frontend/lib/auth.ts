@@ -9,7 +9,7 @@ export interface AuthUser extends User {
 /**
  * Sign up a new user with email and password
  */
-export async function signUp(email: string, password: string, username: string) {
+export async function signUp(email: string, password: string, username: string, fullName: string) {
   const supabase = createClient();
   
   // Create the auth user - database trigger will create profile automatically
@@ -19,6 +19,7 @@ export async function signUp(email: string, password: string, username: string) 
     options: {
       data: {
         username,
+        display_name: fullName,
       },
     },
   });
@@ -122,8 +123,8 @@ export async function updateProfile(updates: {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
-  const { error } = await supabase
-    .from('users')
+  const { error } = await (supabase
+    .from('users') as any)
     // @ts-ignore - Supabase type inference issue
     .update(updates)
     .eq('id', user.id);
@@ -136,8 +137,8 @@ export async function updateProfile(updates: {
  */
 export async function isUsernameAvailable(username: string) {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('users')
+  const { data, error } = await (supabase
+    .from('users') as any)
     .select('username')
     .eq('username', username)
     .maybeSingle();

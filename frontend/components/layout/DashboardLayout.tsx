@@ -62,11 +62,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       if (!authUser) return null;
 
       // Get user profile from users table
-      const { data: profile } = await supabase
+      const { data: profileData } = await supabase
         .from('users')
         .select('*')
         .eq('id', authUser.id)
         .single();
+
+      const profile = profileData as any;
 
       return profile || { username: authUser.email?.split('@')[0], email: authUser.email, display_name: authUser.email?.split('@')[0] };
     },
@@ -81,29 +83,33 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       if (!authUser) return [];
 
       // Fetch recent bets
-      const { data: bets } = await supabase
+      const { data: betsData } = await supabase
         .from('bets')
         .select('*, bookie:bookies(*)')
         .eq('user_id', authUser.id)
         .order('placed_at', { ascending: false })
         .limit(3);
 
+      const bets = (betsData as any[]) || [];
+
       // Fetch recent transactions
-      const { data: transactions } = await supabase
+      const { data: transactionsData } = await supabase
         .from('bankroll_transactions')
         .select('*, bookie:bookies(*)')
         .eq('user_id', authUser.id)
         .order('created_at', { ascending: false })
         .limit(3);
 
+      const transactions = (transactionsData as any[]) || [];
+
       // Combine and sort by date
       const combined = [
-        ...(bets || []).map(bet => ({
+        ...bets.map(bet => ({
           ...bet,
           type: 'bet',
           date: new Date(bet.placed_at),
         })),
-        ...(transactions || []).map(tx => ({
+        ...transactions.map(tx => ({
           ...tx,
           type: 'transaction',
           date: new Date(tx.created_at),
@@ -122,11 +128,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser) return null;
 
-      const { data: bets } = await supabase
+      const { data: betsData } = await supabase
         .from('bets')
         .select('*')
         .eq('user_id', authUser.id);
 
+      const bets = betsData as any[];
       const settled = bets?.filter(b => b.status !== 'pending') || [];
       const won = settled.filter(b => b.status === 'won').length;
       const totalProfit = settled.reduce((sum, b) => sum + (parseFloat(b.profit) || 0), 0);
@@ -149,14 +156,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser) return [];
 
-      const { data } = await supabase
+      const { data: betsData } = await supabase
         .from('bets')
         .select('*')
         .eq('user_id', authUser.id)
         .order('placed_at', { ascending: false })
         .limit(10);
 
-      return data || [];
+      return (betsData as any[]) || [];
     },
   });
 
@@ -180,14 +187,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       try {
         // Search bets
-        const { data: bets } = await supabase
+        const { data: betsData } = await supabase
           .from('bets')
           .select('*, bookie:bookies(name)')
           .eq('user_id', authUser.id)
           .or(`description.ilike.%${query}%,status.ilike.%${query}%`)
           .limit(5);
 
-        if (bets) {
+        if (betsData) {
+          const bets = betsData as any[];
           results.push(...bets.map(bet => ({
             ...bet,
             type: 'bet',
@@ -198,14 +206,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         }
 
         // Search bookies
-        const { data: bookies } = await supabase
+        const { data: bookiesData } = await supabase
           .from('bookies')
           .select('*')
           .eq('user_id', authUser.id)
           .or(`name.ilike.%${query}%,website.ilike.%${query}%`)
           .limit(5);
 
-        if (bookies) {
+        if (bookiesData) {
+          const bookies = bookiesData as any[];
           results.push(...bookies.map(bookie => ({
             ...bookie,
             type: 'bookie',
@@ -216,14 +225,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         }
 
         // Search transactions
-        const { data: transactions } = await supabase
+        const { data: transactionsData } = await supabase
           .from('bankroll_transactions')
           .select('*, bookie:bookies(name)')
           .eq('user_id', authUser.id)
           .or(`description.ilike.%${query}%,type.ilike.%${query}%`)
           .limit(5);
 
-        if (transactions) {
+        if (transactionsData) {
+          const transactions = transactionsData as any[];
           results.push(...transactions.map(tx => ({
             ...tx,
             type: 'transaction',

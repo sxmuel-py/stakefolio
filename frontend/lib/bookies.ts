@@ -10,8 +10,8 @@ type BookieUpdate = Database['public']['Tables']['bookies']['Update'];
  */
 export async function getBookies() {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('bookies')
+  const { data, error } = await (supabase
+    .from('bookies') as any)
     .select('*')
     .order('created_at', { ascending: false });
 
@@ -24,8 +24,8 @@ export async function getBookies() {
  */
 export async function getBookie(id: string) {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('bookies')
+  const { data, error } = await (supabase
+    .from('bookies') as any)
     .select('*')
     .eq('id', id)
     .single();
@@ -42,8 +42,8 @@ export async function createBookie(bookie: BookieInsert) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
-  const { data, error } = await supabase
-    .from('bookies')
+  const { data, error } = await (supabase
+    .from('bookies') as any)
     .insert({
       ...bookie,
       user_id: user.id,
@@ -56,9 +56,9 @@ export async function createBookie(bookie: BookieInsert) {
 
   // Create initial deposit transaction if there's an initial deposit
   if (bookie.initial_deposit && bookie.initial_deposit > 0) {
-    await supabase.from('bankroll_transactions').insert({
+    await (supabase.from('bankroll_transactions') as any).insert({
       user_id: user.id,
-      bookie_id: data.id, // data.id is string UUID
+      bookie_id: (data as any).id, // data.id is string UUID
       type: 'deposit',
       amount: bookie.initial_deposit,
       balance_before: 0,
@@ -75,8 +75,8 @@ export async function createBookie(bookie: BookieInsert) {
  */
 export async function updateBookie(id: string, updates: BookieUpdate) {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from('bookies')
+  const { data, error } = await (supabase
+    .from('bookies') as any)
     .update(updates)
     .eq('id', id)
     .select()
@@ -91,8 +91,8 @@ export async function updateBookie(id: string, updates: BookieUpdate) {
  */
 export async function deleteBookie(id: string) {
   const supabase = createClient();
-  const { error } = await supabase
-    .from('bookies')
+  const { error } = await (supabase
+    .from('bookies') as any)
     .delete()
     .eq('id', id);
 
@@ -104,12 +104,13 @@ export async function deleteBookie(id: string) {
  */
 export async function getBookieStats(bookieId: string) {
   const supabase = createClient();
-  const { data: bets, error } = await supabase
-    .from('bets')
+  const { data: betsData, error } = await (supabase
+    .from('bets') as any)
     .select('*')
     .eq('bookie_id', bookieId);
 
   if (error) throw error;
+  const bets = betsData as any[];
 
   const totalBets = bets.length;
   const settledBets = bets.filter(b => b.status !== 'pending');
@@ -122,7 +123,7 @@ export async function getBookieStats(bookieId: string) {
     winRate: settledBets.length > 0 ? (wonBets / settledBets.length) * 100 : 0,
     totalProfit,
     roi: settledBets.length > 0 
-      ? (totalProfit / settledBets.reduce((sum, bet) => sum + bet.stake, 0)) * 100 
+      ? (totalProfit / settledBets.reduce((sum: number, bet: any) => sum + (bet.stake || 0), 0)) * 100 
       : 0,
   };
 }

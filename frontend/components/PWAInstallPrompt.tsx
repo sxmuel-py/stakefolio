@@ -48,7 +48,7 @@ export default function PWAInstallPrompt() {
     window.addEventListener('beforeinstallprompt', handler);
 
     // For iOS, show manual instructions after 3 seconds
-    if (iOS && !window.navigator.standalone) {
+    if (iOS && !(navigator as any).standalone) {
       setTimeout(() => {
         setShowPrompt(true);
       }, 3000);

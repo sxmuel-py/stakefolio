@@ -22,16 +22,18 @@ export default function SettingsPage() {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser) return null;
 
-      const { data } = await supabase
+      const { data: userData } = await supabase
         .from('users')
         .select('*')
         .eq('id', authUser.id)
         .single();
 
-      if (data) {
+      if (userData) {
+        const data = userData as any;
         setSelectedCurrency(data.preferred_currency || 'USD');
+        return data;
       }
-      return data;
+      return null;
     },
   });
 
@@ -42,8 +44,7 @@ export default function SettingsPage() {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser) throw new Error('Not authenticated');
 
-      const { error } = await supabase
-        .from('users')
+      const { error } = await (supabase.from('users') as any)
         .update({ preferred_currency: currency })
         .eq('id', authUser.id);
 
