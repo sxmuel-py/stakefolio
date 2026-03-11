@@ -32,53 +32,29 @@ export default function LeaderboardPage() {
     queryFn: async (): Promise<LeaderboardEntry[]> => {
       const supabase = createClient();
 
-      // Get all users with their bet stats
+      // Get all users with their pre-calculated bet stats from triggers
       const { data: users, error: usersError } = await supabase
         .from('users')
-        .select('id, username, display_name, email');
+        .select('id, username, display_name, email, total_profit, win_rate, total_bets')
+        .gt('total_bets', 4); // Minimum 5 bets required (gt 4)
 
       if (usersError || !users) return [];
 
-      // Get stats for each user
-      const leaderboardData = await Promise.all(
-        users.map(async (user: { id: string, username: string, display_name: string | null, email: string }) => {
-          const { data: bets } = await supabase
-            .from('bets')
-            .select('*')
-            .eq('user_id', user.id)
-            .returns<Bet[]>();
-
-          const userBets = bets || [];
-          const totalBets = userBets.length;
-          const wonBets = userBets.filter(b => b.status === 'won').length;
-          const settledBets = userBets.filter(b => b.status !== 'pending').length;
-          const totalProfit = userBets.reduce((sum, b) => {
-            if (b.status === 'won') return sum + (b.stake * b.odds - b.stake);
-            if (b.status === 'lost') return sum - b.stake;
-            return sum;
-          }, 0);
-          const winRate = settledBets > 0 ? (wonBets / settledBets) * 100 : 0;
-
-          return {
-            userId: user.id,
-            username: user.username || user.display_name || user.email?.split('@')[0] || 'Anonymous',
-            totalBets,
-            wonBets,
-            totalProfit,
-            winRate,
-            settledBets,
-          };
-        })
-      );
-
-      // Filter users with at least 5 settled bets
-      const qualified = leaderboardData.filter(u => u.settledBets >= 5);
+      const leaderboardData: LeaderboardEntry[] = users.map(user => ({
+        userId: user.id,
+        username: user.username || user.display_name || user.email?.split('@')[0] || 'Anonymous',
+        totalBets: user.total_bets,
+        wonBets: 0, // We don't need this for sorting, but kept for interface compatibility
+        totalProfit: user.total_profit,
+        winRate: user.win_rate,
+        settledBets: user.total_bets,
+      }));
 
       // Sort based on selected criteria
       if (sortBy === 'profit') {
-        return qualified.sort((a, b) => b.totalProfit - a.totalProfit);
+        return leaderboardData.sort((a, b) => b.totalProfit - a.totalProfit);
       } else {
-        return qualified.sort((a, b) => b.winRate - a.winRate);
+        return leaderboardData.sort((a, b) => b.winRate - a.winRate);
       }
     },
   });

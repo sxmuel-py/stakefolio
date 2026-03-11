@@ -278,89 +278,30 @@ export const betsAPI = {
 export const bankrollAPI = {
   deposit: async (data: { bookie_id: string; amount: number; description?: string }) => {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
+    
+    const { data: result, error } = await supabase.rpc('handle_bankroll_transaction', {
+      p_bookie_id: data.bookie_id,
+      p_amount: data.amount,
+      p_type: 'deposit',
+      p_description: data.description
+    });
 
-    // Get current bookie balance
-    const { data: bookie } = await supabase
-      .from('bookies')
-      .select('current_balance')
-      .eq('id', data.bookie_id)
-      .single();
-
-    const newBalance = (bookie?.current_balance || 0) + data.amount;
-
-    // Create transaction
-    const { data: transaction, error: txError } = await supabase
-      .from('bankroll_transactions')
-      .insert({
-        user_id: user.id,
-        bookie_id: data.bookie_id,
-        type: 'deposit',
-        amount: data.amount,
-        balance_after: newBalance,
-        description: data.description || 'Deposit',
-      })
-      .select()
-      .single();
-
-    if (txError) throw txError;
-
-    // Update bookie balance
-    const { error: bookieError } = await supabase
-      .from('bookies')
-      .update({ current_balance: newBalance })
-      .eq('id', data.bookie_id);
-
-    if (bookieError) throw bookieError;
-
-    return { data: transaction };
+    if (error) throw error;
+    return { data: result };
   },
 
   withdraw: async (data: { bookie_id: string; amount: number; description?: string }) => {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
+    
+    const { data: result, error } = await supabase.rpc('handle_bankroll_transaction', {
+      p_bookie_id: data.bookie_id,
+      p_amount: -data.amount,
+      p_type: 'withdraw',
+      p_description: data.description
+    });
 
-    // Get current bookie balance
-    const { data: bookie } = await supabase
-      .from('bookies')
-      .select('current_balance')
-      .eq('id', data.bookie_id)
-      .single();
-
-    const currentBalance = bookie?.current_balance || 0;
-    if (currentBalance < data.amount) {
-      throw new Error('Insufficient balance');
-    }
-
-    const newBalance = currentBalance - data.amount;
-
-    // Create transaction
-    const { data: transaction, error: txError } = await supabase
-      .from('bankroll_transactions')
-      .insert({
-        user_id: user.id,
-        bookie_id: data.bookie_id,
-        type: 'withdrawal',
-        amount: -data.amount,
-        balance_after: newBalance,
-        description: data.description || 'Withdrawal',
-      })
-      .select()
-      .single();
-
-    if (txError) throw txError;
-
-    // Update bookie balance
-    const { error: bookieError } = await supabase
-      .from('bookies')
-      .update({ current_balance: newBalance })
-      .eq('id', data.bookie_id);
-
-    if (bookieError) throw bookieError;
-
-    return { data: transaction };
+    if (error) throw error;
+    return { data: result };
   },
 
   getTransactions: async (params?: { bookie_id?: string }) => {
