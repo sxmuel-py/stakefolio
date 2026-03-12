@@ -34,6 +34,18 @@ export async function signUp(email: string, password: string, username: string, 
  * Sign in an existing user
  */
 export async function signIn(email: string, password: string) {
+  // Demo account bypass
+  if (email === 'test@example.com' && password === 'test1234') {
+    return { 
+      user: { 
+        id: 'demo-user-id', 
+        email: 'test@example.com',
+        user_metadata: { username: 'test_user', display_name: 'Test person' }
+      }, 
+      session: { access_token: 'demo-token' } 
+    };
+  }
+
   const supabase = createClient();
   const { data, error } = await supabase.auth.signInWithPassword({
     email,

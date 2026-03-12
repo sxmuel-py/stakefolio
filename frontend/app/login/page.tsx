@@ -235,6 +235,37 @@ export default function LoginPage() {
                 {isLogin ? 'Sign in' : 'Create account'}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
+
+              {isLogin && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full border-dashed border-gray-300 dark:border-gray-600 text-gray-500 hover:text-emerald-500 hover:border-emerald-500"
+                  onClick={async () => {
+                    setFormData({
+                      ...formData,
+                      email: 'test@example.com',
+                      password: 'test1234'
+                    });
+                    // Small delay to show the user the fields being filled
+                    setTimeout(async () => {
+                      setIsLoading(true);
+                      try {
+                        await signIn('test@example.com', 'test1234');
+                        toast.success('Logged in as demo user');
+                        router.push('/dashboard');
+                      } catch (error: any) {
+                        toast.error(error.message || 'Demo login failed');
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }, 500);
+                  }}
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Try Demo Access
+                </Button>
+              )}
             </form>
 
             {/* Divider */}
