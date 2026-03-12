@@ -36,6 +36,11 @@ export async function signUp(email: string, password: string, username: string, 
 export async function signIn(email: string, password: string) {
   // Demo account bypass
   if (email === 'test@example.com' && password === 'test1234') {
+    // Set a cookie that survives page reloads and middleware checks
+    if (typeof window !== 'undefined') {
+      document.cookie = "demo_access=true; path=/; max-age=3600; SameSite=Lax";
+    }
+    
     return { 
       user: { 
         id: 'demo-user-id', 
@@ -60,6 +65,11 @@ export async function signIn(email: string, password: string) {
  * Sign out the current user
  */
 export async function signOut() {
+  // Clear demo cookie
+  if (typeof window !== 'undefined') {
+    document.cookie = "demo_access=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  }
+  
   const supabase = createClient();
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
@@ -69,6 +79,15 @@ export async function signOut() {
  * Get the current authenticated user
  */
 export async function getCurrentUser() {
+  // Demo bypass
+  if (typeof window !== 'undefined' && document.cookie.includes('demo_access=true')) {
+    return { 
+      id: 'demo-user-id', 
+      email: 'test@example.com',
+      user_metadata: { username: 'test_user', display_name: 'Test person' }
+    } as any;
+  }
+
   const supabase = createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error) throw error;
@@ -111,6 +130,17 @@ export async function updatePassword(newPassword: string) {
  * Get user profile from public.users table
  */
 export async function getUserProfile(userId: string) {
+  if (userId === 'demo-user-id') {
+    return {
+      id: 'demo-user-id',
+      username: 'test_user',
+      display_name: 'Test person',
+      preferred_currency: 'USD',
+      is_public: true,
+      created_at: new Date().toISOString()
+    };
+  }
+
   const supabase = createClient();
   const { data, error } = await supabase
     .from('users')
